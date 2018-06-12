@@ -2,7 +2,7 @@
   "name": "theme-deck",
   "displayName": "Theme Deck",
   "description": "Automatically shuffle through editor themes on vscode.",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "edanlewis",
   "engines": {
     "vscode": "^1.23.0"
@@ -10,6 +10,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "themedeck.png",
   "activationEvents": [
     "onCommand:extension.themeDeck"
   ],
@@ -45,5 +46,12 @@
     "vscode": "^1.1.6",
     "@types/node": "^7.0.43",
     "@types/mocha": "^2.2.42"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fishshiz/Theme-Deck.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fishshiz/Theme-Deck/issues"
   }
 }
