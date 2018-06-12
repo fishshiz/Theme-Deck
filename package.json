@@ -3,7 +3,7 @@
   "displayName": "Theme Deck",
   "description": "Automatically shuffle through editor themes on vscode.",
   "version": "1.0.0",
-  "publisher": "edan-lewis",
+  "publisher": "Edan Lewis",
   "engines": {
     "vscode": "^1.23.0"
   },
