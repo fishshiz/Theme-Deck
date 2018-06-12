@@ -18,16 +18,13 @@ import {
 export function activate(context: ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error).
   // This line of code will only be executed once when your extension is activated.
-  console.log(
-    'Congratulations, your extension "Theme Deck" is now active!'
-  );
   let theme = new Shuffler();
   let shuf = commands.registerCommand("extension.themeDeck", () => {
     theme.shuffle();
   });
+  
   const update = () => {
-    // let theme = new Shuffler();
-    let shuff = theme.shuffle();
+    let shuffl = theme.shuffle();
   };
   let ref = workspace.getConfiguration("themeDeck");
   let intervalTime = ref.intervalTime * 60000;
@@ -46,7 +43,6 @@ class Shuffler {
     // Get the current text editor
     const arr = [];
     let currentTheme = this._getTheme();
-    console.log(currentTheme);
     let themeExtensions = extensions.all.filter(el => {
       if (el.packageJSON.contributes) {
         return "themes" in el.packageJSON.contributes;
@@ -57,8 +53,9 @@ class Shuffler {
         themeExtensions[i].packageJSON.contributes.themes
       );
       for (let j = 0; j < themes.length; j++) {
-        if (themes[j].label !== currentTheme) {
-          arr.push(themes[j].label);
+        let candidate = (themes[j] as any).label
+        if (candidate !== currentTheme) {
+          arr.push(candidate);
         }
       }
     }

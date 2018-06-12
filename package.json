@@ -15,6 +15,12 @@
     "onCommand:extension.themeDeck"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "extension.themeDeck",
+        "title": "Shuffle Themes"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Interval configuration",
@@ -25,13 +31,7 @@
           "description": "Length of time in minutes between theme shuffles."
         }
       }
-    },
-    "commands": [
-      {
-        "command": "extension.themeDeck",
-        "title": "Shuffle Themes"
-      }
-    ]
+    }
   },
   "main": "./out/extension",
   "scripts": {
