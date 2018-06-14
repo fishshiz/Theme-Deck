@@ -22,14 +22,17 @@ export function activate(context: ExtensionContext) {
   let deck;
   let all = commands.registerCommand("extension.themeDeck", () => {
     theme.grabAllThemes();
+    theme.shuffle();
   });
   let light = commands.registerCommand("extension.themeDeckLight", () => {
     theme.grabLightThemes();
+    theme.shuffle();
   });
   let dark = commands.registerCommand("extension.themeDeckDark", () => {
     theme.grabDarkThemes();
-  })
-  theme.shuffle();
+    theme.shuffle();
+  });
+  
   const update = () => {
     theme.shuffle();
   };
