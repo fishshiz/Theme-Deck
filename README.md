@@ -35,4 +35,8 @@ This is my first ever authored extension (WOOOOO!!!). I'm still figuring a lot o
 
 Initial release of Theme Deck 🚀. Automated theme shuffling.
 
+### 1.0.1
+
+Fixes a few bugs, and adds two new commands: `Shuffle Themes (Dark)` and `Shuffle Themes (Light)`.
+
 **Enjoy!**

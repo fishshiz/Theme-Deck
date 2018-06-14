@@ -12,13 +12,23 @@
   ],
   "icon": "themedeck.png",
   "activationEvents": [
-    "onCommand:extension.themeDeck"
+    "onCommand:extension.themeDeck",
+    "onCommand:extension.themeDeckLight",
+    "onCommand:extension.themeDeckDark"
   ],
   "contributes": {
     "commands": [
       {
         "command": "extension.themeDeck",
         "title": "Shuffle Themes"
+      },
+      {
+        "command": "extension.themeDeckLight",
+        "title": "Shuffle Themes (Light)"
+      },
+      {
+        "command": "extension.themeDeckDark",
+        "title": "Shuffle Themes (Dark)"
       }
     ],
     "configuration": {
