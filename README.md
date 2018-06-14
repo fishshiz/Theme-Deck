@@ -8,24 +8,11 @@ To get started, simply install the extension, refresh your editor and run the `S
 
 > Tip: You can adjust the length of intervals in minutes by adjusting the `themeDeck.intervalTime` attribute in settings.
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Theme Deck currently contributes just the following configuration setting:
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* `themeDeck.intervalTime`: specifies the interval time (in minutes) between theme switches.
 
 ## Release Notes
 
