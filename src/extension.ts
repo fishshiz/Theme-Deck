@@ -32,7 +32,7 @@ export function activate(context: ExtensionContext) {
     theme.grabDarkThemes();
     theme.shuffle();
   });
-  
+
   const update = () => {
     theme.shuffle();
   };
@@ -48,7 +48,9 @@ export function activate(context: ExtensionContext) {
 
 class Shuffler {
   deck: string[];
-  constructor(deck: string[]) { this.deck = []; }
+  constructor(deck: string[]) {
+    this.deck = [];
+  }
   private _statusBarItem: StatusBarItem = window.createStatusBarItem(
     StatusBarAlignment.Left
   );
@@ -64,12 +66,10 @@ class Shuffler {
     const arr = [];
     let currentTheme = this._getTheme();
     let themeExtensions = this.grabAllExtensions();
-    for (let i = 0; i < themeExtensions.length; i++) {
-      let themes = Array.from(
-        themeExtensions[i].packageJSON.contributes.themes
-      );
-      for (let j = 0; j < themes.length; j++) {
-        let candidate = (themes[j] as any).label;
+    for (let themePack of themeExtensions) {
+      let themes = Array.from(themePack.packageJSON.contributes.themes);
+      for (let theme of themes) {
+        let candidate = (theme as any).label;
         if (candidate !== currentTheme) {
           arr.push(candidate);
         }
@@ -81,12 +81,10 @@ class Shuffler {
     const arr = [];
     let currentTheme = this._getTheme();
     let themeExtensions = this.grabAllExtensions();
-    for (let i = 0; i < themeExtensions.length; i++) {
-      let themes = Array.from(
-        themeExtensions[i].packageJSON.contributes.themes
-      );
-      for (let j = 0; j < themes.length; j++) {
-        let candidate = (themes[j] as any).label;
+    for (let themePack of themeExtensions) {
+      let themes = Array.from(themePack.packageJSON.contributes.themes);
+      for (let theme of themes) {
+        let candidate = (theme as any).label;
 
         if (candidate !== currentTheme && !candidate.includes("Light")) {
           arr.push(candidate);
@@ -99,12 +97,10 @@ class Shuffler {
     const arr = [];
     let currentTheme = this._getTheme();
     let themeExtensions = this.grabAllExtensions();
-    for (let i = 0; i < themeExtensions.length; i++) {
-      let themes = Array.from(
-        themeExtensions[i].packageJSON.contributes.themes
-      );
-      for (let j = 0; j < themes.length; j++) {
-        let candidate = (themes[j] as any).label;
+    for (let themePack of themeExtensions) {
+      let themes = Array.from(themePack.packageJSON.contributes.themes);
+      for (let theme of themes) {
+        let candidate = (theme as any).label;
 
         if (candidate !== currentTheme && candidate.includes("Light")) {
           arr.push(candidate);
