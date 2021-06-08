@@ -14,7 +14,8 @@
   "activationEvents": [
     "onCommand:extension.themeDeck",
     "onCommand:extension.themeDeckLight",
-    "onCommand:extension.themeDeckDark"
+    "onCommand:extension.themeDeckDark",
+    "onCommand:extension.themeDeckFavorites"
   ],
   "contributes": {
     "commands": [
@@ -29,6 +30,10 @@
       {
         "command": "extension.themeDeckDark",
         "title": "Shuffle Themes (Dark)"
+      },
+      {
+        "command": "extension.themeDeckFavorites",
+        "title": "Shuffle Themes (Favorites)"
       }
     ],
     "configuration": {
@@ -39,6 +44,11 @@
           "type": "number",
           "default": 20,
           "description": "Length of time in minutes between theme shuffles."
+        },
+        "themeDeck.favoriteThemes": {
+          "type": "array",
+          "default": [],
+          "description": "Add your favorite themes here."
         }
       }
     }

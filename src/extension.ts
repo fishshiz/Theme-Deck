@@ -10,7 +10,7 @@ import {
   StatusBarAlignment,
   StatusBarItem,
   TextDocument,
-  extensions
+  extensions,
 } from "vscode";
 
 // This method is called when your extension is activated. Activation is
@@ -19,7 +19,6 @@ export function activate(context: ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error).
   // This line of code will only be executed once when your extension is activated.
   let theme = new Shuffler([]);
-  let deck;
   let all = commands.registerCommand("extension.themeDeck", () => {
     theme.grabAllThemes();
     theme.shuffle();
@@ -32,18 +31,26 @@ export function activate(context: ExtensionContext) {
     theme.grabDarkThemes();
     theme.shuffle();
   });
+  let favorites = commands.registerCommand(
+    "extension.themeDeckFavorites",
+    () => {
+      theme.grabFavoriteThemes();
+      theme.shuffle();
+    }
+  );
 
   const update = () => {
     theme.shuffle();
   };
-  let ref = workspace.getConfiguration("themeDeck");
-  let intervalTime = ref.intervalTime * 60000;
+  const ref = workspace.getConfiguration("themeDeck");
+  const intervalTime = ref.intervalTime * 60000;
 
   setInterval(update, intervalTime);
   context.subscriptions.push(theme);
   context.subscriptions.push(all);
   context.subscriptions.push(light);
   context.subscriptions.push(dark);
+  context.subscriptions.push(favorites);
 }
 
 class Shuffler {
@@ -55,7 +62,7 @@ class Shuffler {
     StatusBarAlignment.Left
   );
   private grabAllExtensions() {
-    let themeExtensions = extensions.all.filter(el => {
+    let themeExtensions = extensions.all.filter((el) => {
       if (el.packageJSON.contributes) {
         return "themes" in el.packageJSON.contributes;
       }
@@ -109,6 +116,12 @@ class Shuffler {
     }
     this.deck = arr;
   }
+
+  public grabFavoriteThemes() {
+    const ref = workspace.getConfiguration("themeDeck");
+    this.deck = ref.favoriteThemes;
+  }
+
   public shuffle() {
     // Get the current text editor
     let random = Math.floor(Math.random() * this.deck.length);
