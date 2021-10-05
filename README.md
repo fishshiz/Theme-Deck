@@ -12,7 +12,7 @@ To get started, simply install the extension, refresh your editor and run the `S
 
 Theme Deck currently contributes just the following configuration setting:
 
-* `themeDeck.intervalTime`: specifies the interval time (in minutes) between theme switches.
+- `themeDeck.intervalTime`: specifies the interval time (in minutes) between theme switches.
 
 ## Release Notes
 
@@ -25,5 +25,9 @@ Initial release of Theme Deck 🚀. Automated theme shuffling.
 ### 1.1.0
 
 Fixes a few bugs, and adds two new commands: `Shuffle Themes (Dark)` and `Shuffle Themes (Light)`.
+
+### 1.4.0
+
+Adds a new Command: `Shuffle Themes (Favorites)`.
 
 **Enjoy!**
