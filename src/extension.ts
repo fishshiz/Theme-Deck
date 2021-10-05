@@ -5,128 +5,168 @@ import {
   window,
   commands,
   workspace,
-  Disposable,
   ExtensionContext,
   StatusBarAlignment,
   StatusBarItem,
-  TextDocument,
-  extensions
+  extensions,
 } from "vscode";
+
+interface Theme {
+  id?: string;
+  label: string;
+  path: string;
+  uiTheme: string;
+}
 
 // This method is called when your extension is activated. Activation is
 // controlled by the activation events defined in package.json.
 export function activate(context: ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error).
   // This line of code will only be executed once when your extension is activated.
-  let theme = new Shuffler([]);
-  let deck;
-  let all = commands.registerCommand("extension.themeDeck", () => {
+  const theme = new Shuffler([]);
+  const all = commands.registerCommand("extension.themeDeck", () => {
     theme.grabAllThemes();
     theme.shuffle();
   });
-  let light = commands.registerCommand("extension.themeDeckLight", () => {
-    theme.grabLightThemes();
+  const light = commands.registerCommand("extension.themeDeckLight", () => {
+    theme.grabAllThemes("light");
     theme.shuffle();
   });
-  let dark = commands.registerCommand("extension.themeDeckDark", () => {
-    theme.grabDarkThemes();
+  const dark = commands.registerCommand("extension.themeDeckDark", () => {
+    theme.grabAllThemes("dark");
     theme.shuffle();
   });
+  const favorites = commands.registerCommand(
+    "extension.themeDeckFavorites",
+    () => {
+      theme.grabFavoriteThemes();
+      theme.shuffle();
+    }
+  );
+
+  // Favorite Theme Command
+  const themeDeckAddRemove = commands.registerCommand(
+    "extension.themeDeckAddRemove",
+    () => {
+      const currentTheme = theme.getTheme();
+      const ref = workspace.getConfiguration("themeDeck");
+      if (!(theme.favorites.indexOf(currentTheme) > -1)) {
+        ref.update("favoriteThemes", [...theme.favorites, currentTheme], true);
+        theme.favorites = [...theme.favorites, currentTheme];
+      } else {
+        ref.update(
+          "favoriteThemes",
+          theme.favorites.filter((f) => f !== currentTheme),
+          true
+        );
+        theme.favorites = theme.favorites.filter((f) => f !== currentTheme);
+      }
+      theme.setStatusBar(currentTheme);
+    }
+  );
 
   const update = () => {
     theme.shuffle();
   };
-  let ref = workspace.getConfiguration("themeDeck");
-  let intervalTime = ref.intervalTime * 60000;
+  const ref = workspace.getConfiguration("themeDeck");
+  const intervalTime = ref.intervalTime * 60000;
 
   setInterval(update, intervalTime);
   context.subscriptions.push(theme);
   context.subscriptions.push(all);
   context.subscriptions.push(light);
   context.subscriptions.push(dark);
+  context.subscriptions.push(favorites);
+  context.subscriptions.push(themeDeckAddRemove);
 }
 
 class Shuffler {
   deck: string[];
+  favorites: string[];
+  allThemes: Theme[];
   constructor(deck: string[]) {
     this.deck = [];
+    this.favorites = this.getFavoriteThemes();
+    this.allThemes = this.grabAllTheme();
   }
   private _statusBarItem: StatusBarItem = window.createStatusBarItem(
     StatusBarAlignment.Left
   );
+  getFavoriteThemes = (): string[] => {
+    return workspace.getConfiguration("themeDeck").favoriteThemes as string[];
+  };
   private grabAllExtensions() {
-    let themeExtensions = extensions.all.filter(el => {
+    return extensions.all.filter((el) => {
       if (el.packageJSON.contributes) {
         return "themes" in el.packageJSON.contributes;
       }
     });
-    return themeExtensions;
   }
-  public grabAllThemes() {
+  private grabAllTheme(): Theme[] {
+    const themeExtensions = this.grabAllExtensions();
+    const themes = themeExtensions.map((themePack) =>
+      Array.from(themePack.packageJSON.contributes.themes)
+    );
+    return [].concat.apply([], themes);
+  }
+  public grabAllThemes(
+    specifier: "light" | "dark" | "favorites" | "all" = "all"
+  ) {
     const arr = [];
-    let currentTheme = this._getTheme();
-    let themeExtensions = this.grabAllExtensions();
+    const currentTheme = this.getTheme();
+    const themeExtensions = this.grabAllExtensions();
     for (let themePack of themeExtensions) {
-      let themes = Array.from(themePack.packageJSON.contributes.themes);
+      const themes = Array.from(themePack.packageJSON.contributes.themes);
       for (let theme of themes) {
-        let candidate = (theme as any).label;
-        if (candidate !== currentTheme) {
-          arr.push(candidate);
+        const candidate = (theme as any).label;
+        switch (specifier) {
+          case "dark":
+            if (candidate !== currentTheme && !candidate.includes("Light")) {
+              arr.push(candidate);
+            }
+            break;
+          case "light":
+            if (candidate !== currentTheme && candidate.includes("Light")) {
+              arr.push(candidate);
+            }
+            break;
+          default:
+            if (candidate !== currentTheme) {
+              arr.push(candidate);
+            }
+            break;
         }
       }
     }
     this.deck = arr;
   }
-  public grabDarkThemes() {
-    const arr = [];
-    let currentTheme = this._getTheme();
-    let themeExtensions = this.grabAllExtensions();
-    for (let themePack of themeExtensions) {
-      let themes = Array.from(themePack.packageJSON.contributes.themes);
-      for (let theme of themes) {
-        let candidate = (theme as any).label;
 
-        if (candidate !== currentTheme && !candidate.includes("Light")) {
-          arr.push(candidate);
-        }
-      }
-    }
-    this.deck = arr;
+  public grabFavoriteThemes() {
+    const ref = workspace.getConfiguration("themeDeck");
+    this.deck = ref.favoriteThemes;
   }
-  public grabLightThemes() {
-    const arr = [];
-    let currentTheme = this._getTheme();
-    let themeExtensions = this.grabAllExtensions();
-    for (let themePack of themeExtensions) {
-      let themes = Array.from(themePack.packageJSON.contributes.themes);
-      for (let theme of themes) {
-        let candidate = (theme as any).label;
 
-        if (candidate !== currentTheme && candidate.includes("Light")) {
-          arr.push(candidate);
-        }
-      }
-    }
-    this.deck = arr;
-  }
   public shuffle() {
     // Get the current text editor
-    let random = Math.floor(Math.random() * this.deck.length);
-    let workbench = workspace.getConfiguration("workbench", null);
-    let newTheme = this.deck[random];
-    workbench.update("colorTheme", newTheme, 1);
-
-    if (newTheme) {
-      this._statusBarItem.text = `Current Theme: ${newTheme}`;
-      this._statusBarItem.show();
-    } else {
-      this._statusBarItem.hide();
-    }
+    const random = Math.floor(Math.random() * this.deck.length);
+    const workbench = workspace.getConfiguration("workbench");
+    const newTheme = this.deck[random];
+    workbench.update("colorTheme", newTheme, true);
+    this.setStatusBar(newTheme);
   }
-  public _getTheme() {
-    let workbench = workspace.getConfiguration("workbench", null);
-    let currTheme = workbench.colorTheme;
-    return currTheme;
+  public setStatusBar(currentTheme: string) {
+    const icon =
+      this.favorites.indexOf(currentTheme) > -1
+        ? "$(star-full)"
+        : "$(star-empty)";
+    this._statusBarItem.text = `${icon} ${currentTheme}`;
+    this._statusBarItem.tooltip = "Click to add/remove from favorites";
+    this._statusBarItem.command = "extension.themeDeckAddRemove";
+    this._statusBarItem.show();
+  }
+  public getTheme() {
+    const workbench = workspace.getConfiguration("workbench");
+    return workbench.colorTheme;
   }
   dispose() {
     this._statusBarItem.dispose();
